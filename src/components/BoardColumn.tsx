@@ -13,6 +13,9 @@ interface BoardColumnProps {
 export function BoardColumn({ column, onAddTask }: BoardColumnProps) {
   const { state, dispatch } = useBoard()
   const [isDragOver, setIsDragOver] = useState(false)
+  const otherColumns = state.columnOrder
+    .filter((id) => id !== column.id)
+    .map((id) => ({ id, title: state.columns[id].title }))
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -41,7 +44,7 @@ export function BoardColumn({ column, onAddTask }: BoardColumnProps) {
       onDrop={handleDrop}
       sx={{
         p: 1.5,
-        width: 300,
+        width: { xs: '100%', sm: 300 },
         flexShrink: 0,
         bgcolor: isDragOver ? 'action.hover' : 'background.paper',
         display: 'flex',
@@ -68,6 +71,16 @@ export function BoardColumn({ column, onAddTask }: BoardColumnProps) {
                 event.dataTransfer.setData('text/from-column', column.id)
               }}
               onDelete={() => dispatch({ type: 'DELETE_TASK', taskId: task.id, columnId: column.id })}
+              otherColumns={otherColumns}
+              onMoveTo={(toColumn) =>
+                dispatch({
+                  type: 'MOVE_TASK',
+                  taskId: task.id,
+                  fromColumn: column.id,
+                  toColumn,
+                  toIndex: state.columns[toColumn].taskIds.length,
+                })
+              }
             />
           )
         })}

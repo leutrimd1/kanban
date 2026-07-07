@@ -15,8 +15,12 @@ export function BoardPage() {
   }
 
   return (
-    <Box sx={{ p: 3, overflowX: 'auto' }}>
-      <Stack direction="row" spacing={2} sx={{ alignItems: 'flex-start' }}>
+    <Box sx={{ p: { xs: 1.5, sm: 3 }, overflowX: 'auto' }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={{ xs: 1.5, sm: 2 }}
+        sx={{ alignItems: { xs: 'stretch', sm: 'flex-start' } }}
+      >
         {state.columnOrder.map((columnId) => (
           <BoardColumn key={columnId} column={state.columns[columnId]} onAddTask={setActiveColumn} />
         ))}

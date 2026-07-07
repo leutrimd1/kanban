@@ -8,6 +8,8 @@ import {
   Button,
   MenuItem,
   Stack,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import type { Priority } from '../types'
 
@@ -20,6 +22,8 @@ interface AddTaskDialogProps {
 const priorities: Priority[] = ['low', 'medium', 'high']
 
 export function AddTaskDialog({ open, onClose, onSubmit }: AddTaskDialogProps) {
+  const theme = useTheme()
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState<Priority>('medium')
@@ -38,7 +42,7 @@ export function AddTaskDialog({ open, onClose, onSubmit }: AddTaskDialogProps) {
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" fullScreen={fullScreen}>
       <DialogTitle>Add task</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>

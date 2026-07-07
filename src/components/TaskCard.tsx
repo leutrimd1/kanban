@@ -1,6 +1,8 @@
-import { Card, CardContent, CardActions, Typography, Chip, IconButton, Stack } from '@mui/material'
+import { useState } from 'react'
+import { Card, CardContent, CardActions, Typography, Chip, IconButton, Stack, Menu, MenuItem } from '@mui/material'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined'
-import type { Task } from '../types'
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
+import type { Column, Task } from '../types'
 
 const priorityColor: Record<Task['priority'], 'success' | 'warning' | 'error'> = {
   low: 'success',
@@ -12,9 +14,13 @@ interface TaskCardProps {
   task: Task
   onDragStart: (event: React.DragEvent<HTMLDivElement>) => void
   onDelete: () => void
+  otherColumns: Pick<Column, 'id' | 'title'>[]
+  onMoveTo: (columnId: Column['id']) => void
 }
 
-export function TaskCard({ task, onDragStart, onDelete }: TaskCardProps) {
+export function TaskCard({ task, onDragStart, onDelete, otherColumns, onMoveTo }: TaskCardProps) {
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null)
+
   return (
     <Card
       variant="outlined"
@@ -36,9 +42,31 @@ export function TaskCard({ task, onDragStart, onDelete }: TaskCardProps) {
         <Stack direction="row">
           <Chip size="small" label={task.priority} color={priorityColor[task.priority]} />
         </Stack>
-        <IconButton size="small" aria-label="delete task" onClick={onDelete}>
-          <DeleteOutlineIcon fontSize="small" />
-        </IconButton>
+        <Stack direction="row">
+          <IconButton
+            size="small"
+            aria-label="move task to another column"
+            onClick={(event) => setMenuAnchor(event.currentTarget)}
+          >
+            <SwapHorizIcon fontSize="small" />
+          </IconButton>
+          <IconButton size="small" aria-label="delete task" onClick={onDelete}>
+            <DeleteOutlineIcon fontSize="small" />
+          </IconButton>
+        </Stack>
+        <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)}>
+          {otherColumns.map((column) => (
+            <MenuItem
+              key={column.id}
+              onClick={() => {
+                setMenuAnchor(null)
+                onMoveTo(column.id)
+              }}
+            >
+              Move to {column.title}
+            </MenuItem>
+          ))}
+        </Menu>
       </CardActions>
     </Card>
   )
